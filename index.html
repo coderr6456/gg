@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jar OS Code</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+line-height: 1.6;
+margin: 0;
+padding: 0;
+background-color: #f4f4f4;
+color: #333;
+}
+.container {
+width: 80%;
+margin: auto;
+overflow: hidden;
+}
+header {
+background: #333;
+color: #fff;
+padding-top: 30px;
+min-height: 70px;
+border-bottom: #ddd 3px solid;
+text-align: center;
+}
+header h1 {
+margin: 0;
+font-size: 24px;
+}
+.content {
+padding: 20px;
+background: #fff;
+margin-top: 20px;
+border-radius: 8px;
+}
+pre {
+background: #333;
+color: #f4f4f4;
+padding: 20px;
+border-radius: 5px;
+overflow-x: auto;
+}
+</style>
+</head>
+<body>
+<header>
+<div class="container">
+<h1>Jar OS Code</h1>
+</div>
+</header>
+<div class="container">
+<div class="content">
+<h2>Python Code</h2>
+<pre><code>
+import tkinter as tk
+from tkinter import messagebox, filedialog
+from tkinterweb import HtmlFrame
+import webbrowser
+import socket
+import os
+import platform
+from datetime import datetime
+import time
+import psutil
+
+class JarOS:
+def __init__(self, root):
+self.root = root
+self.root.title("Jar OS")
+self.root.geometry("800x600")
+
+# Create a menu bar
+self.menu_bar = tk.Menu(self.root)
+self.root.config(menu=self.menu_bar)
+
+# Add 'Start' menu
+self.start_menu = tk.Menu(self.menu_bar, tearoff=0)
+self.menu_bar.add_cascade(label="Start", menu=self.start_menu)
+self.start_menu.add_command(label="Open Notepad", command=self.open_notepad)
+self.start_menu.add_command(label="Open Calculator", command=self.open_calculator)
+self.start_menu.add_command(label="Open Web Browser", command=self.open_browser)
+self.start_menu.add_command(label="Open Network", command=self.open_network)
+self.start_menu.add_command(label="Open Terminal", command=self.open_terminal)
+self.start_menu.add_command(label="Open File Explorer", command=self.open_file_explorer)
+self.start_menu.add_command(label="Exit", command=self.root.quit)
+
+# Create a desktop area
+self.desktop = tk.Frame(self.root, bg="#2e2e2e")
+self.desktop.pack(fill=tk.BOTH, expand=True)
+
+# Add buttons to open applications
+self.create_app_buttons()
+
+# Add a settings button at the bottom
+self.settings_button = tk.Button(self.desktop, text="Settings", command=self.open_settings, bg="#007acc", fg="white", font=("Arial", 12))
+self.settings_button.pack(side=tk.BOTTOM, pady=10)
+
+# Add a battery icon
+self.battery_icon = tk.Label(self.desktop, text="", bg="#2e2e2e", fg="white", font=("Arial", 12))
+self.battery_icon.pack(side=tk.BOTTOM, pady=5)
+
+# Update the battery status
+self.update_battery_status()
+
+# Update battery status every minute
+self.root.after(60000, self.update_battery_status)
+
+def create_app_buttons(self):
+button_style = {'bg': '#007acc', 'fg': 'white', 'font': ('Arial', 12), 'width': 20, 'height': 2}
+
+self.open_notepad_button = tk.Button(self.desktop, text="Notepad", command=self.open_notepad, **button_style)
+self.open_notepad_button.pack(pady=10)
+
+self.open_calculator_button = tk.Button(self.desktop, text="Calculator", command=self.open_calculator, **button_style)
+self.open_calculator_button.pack(pady=10)
+
+self.open_browser_button = tk.Button(self.desktop, text="Web Browser", command=self.open_browser, **button_style)
+self.open_browser_button.pack(pady=10)
+
+self.open_network_button = tk.Button(self.desktop, text="Network", command=self.open_network, **button_style)
+self.open_network_button.pack(pady=10)
+
+self.open_terminal_button = tk.Button(self.desktop, text="Terminal", command=self.open_terminal, **button_style)
+self.open_terminal_button.pack(pady=10)
+
+self.open_file_explorer_button = tk.Button(self.desktop, text="File Explorer", command=self.open_file_explorer, **button_style)
+self.open_file_explorer_button.pack(pady=10)
+
+def open_notepad(self):
+notepad_window = tk.Toplevel(self.root)
+notepad_window.title("Notepad")
+notepad_window.geometry("400x300")
+
+text_area = tk.Text(notepad_window, wrap=tk.WORD)
+text_area.pack(fill=tk.BOTH, expand=True)
+
+save_button = tk.Button(notepad_window, text="Save", command=lambda: self.save_file(text_area))
+save_button.pack(pady=5)
+
+# Add close (X) and minimize (-) buttons
+self.add_window_controls(notepad_window)
+
+def save_file(self, text_area):
+file_content = text_area.get("1.0", tk.END)
+try:
+with open("untitled.txt", "w") as file:
+file.write(file_content)
+messagebox.showinfo("Save", "File saved successfully!")
+except Exception as e:
+messagebox.showerror("Error", f"An error occurred: {e}")
+
+def open_calculator(self):
+calculator_window = tk.Toplevel(self.root)
+calculator_window.title("Calculator")
+calculator_window.geometry("300x400")
+
+# Simple calculator UI
+entry = tk.Entry(calculator_window, font=("Arial", 18), bd=10, relief="ridge", justify="right")
+entry.pack(fill=tk.BOTH, ipadx=8, pady=5)
+
+buttons = [
+'7', '8', '9', '/',
+'4', '5', '6', '*',
+'1', '2', '3', '-',
+'0', '.', '=', '+'
+]
+
+def on_button_click(value):
+current_text = entry.get()
+if value == "=":
+try:
+result = eval(current_text)
+entry.delete(0, tk.END)
+entry.insert(tk.END, str(result))
+except Exception as e:
+entry.delete(0, tk.END)
+entry.insert(tk.END, "Error")
+else:
+entry.insert(tk.END, value)
+
+button_frame = tk.Frame(calculator_window)
+button_frame.pack()
+
+for btn_text in buttons:
+btn = tk.Button(button_frame, text=btn_text, font=("Arial", 14), width=5, height=2, command=lambda b=btn_text: on_button_click(b))
+btn.grid(row=buttons.index(btn_text)//4, column=buttons.index(btn_text)%4, padx=5, pady=5)
+
+# Add close (X) and minimize (-) buttons
+self.add_window_controls(calculator_window)
+
+def open_browser(self):
+browser_window = tk.Toplevel(self.root)
+browser_window.title("Web Browser")
+browser_window.geometry("800x600")
+
+# Create the search bar
+search_frame = tk.Frame(browser_window)
+search_frame.pack(fill=tk.X)
+
+self.url_entry = tk.Entry(search_frame, width=80)
+self.url_entry.pack(side=tk.LEFT, padx=5, pady=5)
+
+search_button = tk.Button(search_frame, text="Search", command=self.load_page)
+search_button.pack(side=tk.LEFT, padx=5, pady=5)
+
+# Create the web view
+self.web_frame = HtmlFrame(browser_window, horizontal_scrollbar="auto", vertical_scrollbar="auto")
+self.web_frame.pack(fill=tk.BOTH, expand=True)
+
+# Load a default page
+self.web_frame.load_website("https://www.google.com")
+
+def load_page(self):
+url = self.url_entry.get()
+if not url.startswith("http"):
+url = "https://" + url
+try:
+self.web_frame.load_website(url)
+except Exception as e:
+messagebox.showerror("Error", f"Failed to load the page: {e}")
+
+def open_network(self):
+# Open Google in the default web browser
+webbrowser.open("https://www.google.com")
+
+def open_terminal(self):
+TerminalApp(self.root)
+
+def open_file_explorer(self):
+FileExplorerApp(self.root)
+
+def open_settings(self):
+SettingsApp(self.root)
+
+def update_battery_status(self):
+battery = psutil.sensors_battery()
+if battery:
+percent = battery.percent
+charging = "Charging" if battery.power_plugged else "Not Charging"
+self.battery_icon.config(text=f"Battery: {percent}% ({charging})")
+else:
+self.battery_icon.config(text="Battery information not available.")
+
+def add_window_controls(self, window):
+# Close button
+close_button = tk.Button(window, text="X", command=window.destroy, bg="red", fg="white", font=("Arial", 12))
+close_button.pack(side=tk.RIGHT, padx=5)
+
+# Minimize button
+minimize_button = tk.Button(window, text="-", command=lambda: window.iconify(), bg="yellow", fg="black", font=("Arial", 12))
+minimize_button.pack(side=tk.RIGHT, padx=5)
+
+class TerminalApp:
+def __init__(self, parent):
+self.window = tk.Toplevel(parent)
+self.window.title("Terminal")
+self.window.geometry("800x400")
+
+self.text_area = tk.Text(self.window, wrap=tk.NONE)
+self.text_area.pack(fill=tk.BOTH, expand=True)
+
+self.text_area.bind("<Return>", self.execute_command)
+
+self.prompt = "jaros> "
+self.text_area.insert(tk.END, self.prompt)
+self.text_area.config(state=tk.DISABLED)
+
+# Add close (X) and minimize (-) buttons
+self.add_window_controls(self.window)
+
+def execute_command(self, event=None):
+command = self.text_area.get("1.0", tk.END).splitlines()[-1].strip()
+if command:
+self.text_area.config(state=tk.NORMAL)
+self.text_area.insert(tk.END, "\n" + self.prompt)
+self.text_area.config(state=tk.DISABLED)
+self.text_area.see(tk.END)
+output = self.run_command(command)
+self.text_area.config(state=tk.NORMAL)
+self.text_area.insert(tk.END, output + "\n" + self.prompt)
+self.text_area.config(state=tk.DISABLED)
+self.text_area.see(tk.END)
+
+def run_command(self, command):
+try:
+result = os.popen(command).read()
+return result if result else "Command executed."
+except Exception as e:
+return f"Error: {e}"
+
+def add_window_controls(self, window):
+# Close button
+close_button = tk.Button(window, text="X", command=window.destroy, bg="red", fg="white", font=("Arial", 12))
+close_button.pack(side=tk.RIGHT, padx=5)
+
+# Minimize button
+minimize_button = tk.Button(window, text="-", command=lambda: window.iconify(), bg="yellow", fg="black", font=("Arial", 12))
+minimize_button.pack(side=tk.RIGHT, padx=5)
+
+class FileExplorerApp:
+def __init__(self, parent):
+self.window = tk.Toplevel(parent)
+self.window.title("File Explorer")
+self.window.geometry("800x600")
+
+self.file_list = tk.Listbox(self.window)
+self.file_list.pack(fill=tk.BOTH, expand=True)
+
+self.load_files()
+
+# Add close (X) and minimize (-) buttons
+self.add_window_controls(self.window)
+
+def load_files(self):
+self.file_list.delete(0, tk.END)
+for file_name in os.listdir("."):
+self.file_list.insert(tk.END, file_name)
+
+def add_window_controls(self, window):
+# Close button
+close_button = tk.Button(window, text="X", command=window.destroy, bg="red", fg="white", font=("Arial", 12))
+close_button.pack(side=tk.RIGHT, padx=5)
+
+# Minimize button
+minimize_button = tk.Button(window, text="-", command=lambda: window.iconify(), bg="yellow", fg="black", font=("Arial", 12))
+minimize_button.pack(side=tk.RIGHT, padx=5)
+
+class SettingsApp:
+def __init__(self, parent):
+self.window = tk.Toplevel(parent)
+self.window.title("Settings")
+self.window.geometry("400x300")
+
+settings_label = tk.Label(self.window, text="Settings Placeholder")
+settings_label.pack(pady=20)
+
+# Add close (X) and minimize (-) buttons
+self.add_window_controls(self.window)
+
+def add_window_controls(self, window):
+# Close button
+close_button = tk.Button(window, text="X", command=window.destroy, bg="red", fg="white", font=("Arial", 12))
+close_button.pack(side=tk.RIGHT, padx=5)
+
+# Minimize button
+minimize_button = tk.Button(window, text="-", command=lambda: window.iconify(), bg="yellow", fg="black", font=("Arial", 12))
+minimize_button.pack(side=tk.RIGHT, padx=5)
+
+if __name__ == "__main__":
+root = tk.Tk()
+app = JarOS(root)
+root.mainloop()
+</code></pre>
+</div>
+</div>
+</body>
+</html>
